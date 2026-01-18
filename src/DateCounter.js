@@ -1,50 +1,51 @@
-import { type } from "@testing-library/user-event/dist/type";
 import { useReducer, useState } from "react";
+
+const initialState = { count: 0, step: 1 };
 
 function reducer(state, action) {
   console.log(state, action);
   // return state - action;
-  if (action.type === "dec") return state - action.payload;
-  if (action.type === "inc") return state + action.payload;
-  if (action.type === "setCount") return action.payload;
-  if (action.type === "setStep") return action.payload;
+  switch (action.type) {
+    case "dec":
+      return { ...state, count: state.count - state.step };
+    case "inc":
+      return { ...state, count: state.count + state.step };
+    case "setCount":
+      return { ...state, count: action.payload };
+    case "setStep":
+      return { ...state, step: action.payload };
+    case "reset":
+      return { count: 0, step: 1 };
+    default:
+      break;
+  }
 }
 function DateCounter() {
-  // const [count, setCount] = useState(0);
-  const [count, setDispatch] = useReducer(reducer, 0);
-  const [step, setStep] = useState(1);
+  const [state, setDispatch] = useReducer(reducer, initialState);
+  const { count, step } = state;
 
   // This mutates the date object.
   const date = new Date("jan 18 2026");
   date.setDate(date.getDate() + count);
 
   const dec = function () {
-    setDispatch({ type: "dec", payload: -1 });
-    // setDispatch(1);
-    // setCount((count) => count - 1);
-    // setCount((count) => count - step);
+    setDispatch({ type: "dec" });
   };
 
   const inc = function () {
-    setDispatch({ type: "inc", payload: 1 });
-    // setCount((count) => count + 1);
-    // setCount((count) => count + step);
+    setDispatch({ type: "inc" });
   };
 
   const defineCount = function (e) {
     setDispatch({ type: "setCount", payload: Number(e.target.value) });
-    // setCount(Number(e.target.value));
   };
 
   const defineStep = function (e) {
-    setStep(Number(e.target.value));
-    // setDispatch({ type: "setStep", payload: Number(e.target.value) });
+    setDispatch({ type: "setStep", payload: Number(e.target.value) });
   };
 
   const reset = function () {
-    // setCount(0);
-
-    setStep(1);
+    setDispatch({ type: "reset" });
   };
 
   return (
