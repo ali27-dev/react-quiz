@@ -5,6 +5,7 @@ import Loader from "./Loader";
 import Error from "./Error";
 import StartScreen from "./StartScreen";
 import Question from "./Question";
+import NewButton from "./NewButton";
 
 const initailState = {
   questions: [],
@@ -42,6 +43,12 @@ function reducer(state, action) {
             ? state.points + question.points
             : state.points,
       };
+    case "nextQuestion":
+      return {
+        ...state,
+        index: state.index + 1,
+        answer: null,
+      };
     default:
       throw new Error("Action is Unkonwn");
   }
@@ -75,6 +82,7 @@ function App() {
             answer={answer}
           />
         )}
+        <NewButton dispatch={dispatch} answer={answer} />
       </Main>
     </div>
   );
