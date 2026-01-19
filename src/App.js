@@ -1,10 +1,14 @@
 import { useEffect, useReducer } from "react";
 import Header from "./Header";
 import Main from "./Main";
+import Loader from "./Loader";
+import Error from "./Error";
+import StartScreen from "./StartScreen";
+import Question from "./Question";
 
 const initailState = {
   questions: [],
-  status: "Loding",
+  status: "loading",
 };
 
 function reducer(state, action) {
@@ -20,41 +24,35 @@ function reducer(state, action) {
         ...state,
         status: "error",
       };
+    case "start":
+      return {
+        ...state,
+        status: "active",
+      };
     default:
     // throw new Error("Action is Unkonwn");
   }
 }
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, initailState);
-
+  const [{ questions, status }, dispatch] = useReducer(reducer, initailState);
+  const numQuestions = questions.length;
   useEffect(function () {
     fetch(`http://localhost:9000/questions`)
       .then((res) => res.json())
       .then((data) => dispatch({ type: "dataRecived", payload: data }))
       .catch((err) => dispatch({ type: "dataFailed" }));
-
-    /*
-    async function fakeData(params) {
-      try {
-        const res = await fetch(`http://localhost:9000/questions`);
-        console.log(res);
-        const data = await res.json();
-        dispatch({ type: "dataRecived", payload: data });
-        dispatch({ type: "dataFailed" });
-      } catch (error) {
-        console.error(error);
-      }
-    }
-    fakeData();*/
   }, []);
   return (
     <div className="app">
       <Header />
-      <h1>Hello World</h1>
       <Main>
-        <p>1/15</p>
-        <p>Questions</p>
+        {status === "loading" && <Loader />}
+        {status === "error" && <Error />}
+        {status === "ready" && (
+          <StartScreen numQuestions={numQuestions} dispatch={dispatch} />
+        )}
+        {status === "active" && <Question />}
       </Main>
     </div>
   );
