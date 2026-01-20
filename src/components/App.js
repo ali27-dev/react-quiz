@@ -8,7 +8,10 @@ import Question from "./Question";
 import NewButton from "./NewButton";
 import Progress from "./Progress";
 import FinishQuiz from "./FinishQuiz";
+import Footer from "./Footer";
+import Timer from "./Timer";
 
+const SEC_PER_QUESTON = 30;
 const initailState = {
   questions: [],
 
@@ -18,6 +21,7 @@ const initailState = {
   answer: null,
   points: 0,
   highscore: 0,
+  secondRemaining: 10,
 };
 
 function reducer(state, action) {
@@ -37,6 +41,7 @@ function reducer(state, action) {
       return {
         ...state,
         status: "active",
+        secondRemaining: state.questions.length * SEC_PER_QUESTON,
       };
     case "newAnswer":
       const question = state.questions.at(state.index);
@@ -67,14 +72,22 @@ function reducer(state, action) {
         questions: state.questions,
         status: "ready",
       };
+    case "tick":
+      return {
+        ...state,
+        secondRemaining: state.secondRemaining - 1,
+        status: state.secondRemaining === 0 ? "finished" : state.status,
+      };
     default:
       throw new Error("Action is Unkonwn");
   }
 }
 
 function App() {
-  const [{ questions, status, index, answer, points, highscore }, dispatch] =
-    useReducer(reducer, initailState);
+  const [
+    { questions, status, index, answer, points, highscore, secondRemaining },
+    dispatch,
+  ] = useReducer(reducer, initailState);
   const numQuestions = questions.length;
   const totalPoints = questions.reduce((pre, curr) => pre + curr.points, 0);
   const maxPossiblePoints = questions.reduce(
@@ -110,14 +123,18 @@ function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NewButton
-              dispatch={dispatch}
-              answer={answer}
-              index={index}
-              numQuestions={numQuestions}
-            />
+            <Footer>
+              <Timer dispatch={dispatch} secondRemaining={secondRemaining} />
+              <NewButton
+                dispatch={dispatch}
+                answer={answer}
+                index={index}
+                numQuestions={numQuestions}
+              />
+            </Footer>
           </>
         )}
+
         {status === "finished" && (
           <FinishQuiz
             dispatch={dispatch}
