@@ -7,6 +7,7 @@ import StartScreen from "./StartScreen";
 import Question from "./Question";
 import NewButton from "./NewButton";
 import Progress from "./Progress";
+import FinishQuiz from "./FinishQuiz";
 
 const initailState = {
   questions: [],
@@ -14,6 +15,7 @@ const initailState = {
   index: 0,
   answer: null,
   points: 0,
+  highscore: 0,
 };
 
 function reducer(state, action) {
@@ -50,18 +52,27 @@ function reducer(state, action) {
         index: state.index + 1,
         answer: null,
       };
+    case "finish":
+      return {
+        ...state,
+        status: "finished",
+        highscore:
+          state.points > state.highscore ? state.points : state.highscore,
+      };
     default:
       throw new Error("Action is Unkonwn");
   }
 }
 
 function App() {
-  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
-    reducer,
-    initailState
-  );
+  const [{ questions, status, index, answer, points, highscore }, dispatch] =
+    useReducer(reducer, initailState);
   const numQuestions = questions.length;
   const totalPoints = questions.reduce((pre, curr) => pre + curr.points, 0);
+  const maxPossiblePoints = questions.reduce(
+    (pre, curr) => pre + curr.points,
+    0
+  );
   useEffect(function () {
     fetch(`http://localhost:9000/questions`)
       .then((res) => res.json())
@@ -91,8 +102,21 @@ function App() {
               dispatch={dispatch}
               answer={answer}
             />
-            <NewButton dispatch={dispatch} answer={answer} />
+            <NewButton
+              dispatch={dispatch}
+              answer={answer}
+              index={index}
+              numQuestions={numQuestions}
+            />
           </>
+        )}
+        {status === "finished" && (
+          <FinishQuiz
+            dispatch={dispatch}
+            maxPossiblePoints={maxPossiblePoints}
+            points={points}
+            highscore={highscore}
+          />
         )}
       </Main>
     </div>
