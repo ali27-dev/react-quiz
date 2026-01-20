@@ -11,6 +11,8 @@ import FinishQuiz from "./FinishQuiz";
 
 const initailState = {
   questions: [],
+
+  // 'loading', 'error', 'ready', 'active', 'finished'
   status: "loading",
   index: 0,
   answer: null,
@@ -58,6 +60,12 @@ function reducer(state, action) {
         status: "finished",
         highscore:
           state.points > state.highscore ? state.points : state.highscore,
+      };
+    case "restart":
+      return {
+        ...initailState,
+        questions: state.questions,
+        status: "ready",
       };
     default:
       throw new Error("Action is Unkonwn");

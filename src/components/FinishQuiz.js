@@ -1,3 +1,5 @@
+import { type } from "@testing-library/user-event/dist/type";
+
 function FinishQuiz({ dispatch, points, maxPossiblePoints, highscore }) {
   const percentage = (points / maxPossiblePoints) * 100;
 
@@ -15,6 +17,9 @@ function FinishQuiz({ dispatch, points, maxPossiblePoints, highscore }) {
         {maxPossiblePoints} ({Math.ceil(percentage)})%
       </p>
       <p className="highscore">(Highscore: {highscore} points)</p>
+      <button className="btn" onClick={() => dispatch({ type: "restart" })}>
+        Restart Quiz
+      </button>
     </>
   );
 }
