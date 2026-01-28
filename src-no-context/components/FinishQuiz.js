@@ -1,8 +1,6 @@
-import { useQuiz } from "../context/QuizContext";
+import { type } from "@testing-library/user-event/dist/type";
 
-function FinishQuiz() {
-  const { dispatch, points, maxPossiblePoints, highscore } = useQuiz();
-
+function FinishQuiz({ dispatch, points, maxPossiblePoints, highscore }) {
   const percentage = (points / maxPossiblePoints) * 100;
 
   let emoji;

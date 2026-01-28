@@ -1,14 +1,12 @@
+import { type } from "@testing-library/user-event/dist/type";
 import { useEffect } from "react";
-import { useQuiz } from "../context/QuizContext";
 
-function Timer() {
-  const { dispatch, secondRemaining } = useQuiz();
-
+function Timer({ dispatch, secondRemaining }) {
   const mins = Math.floor(secondRemaining / 60);
   const sec = secondRemaining % 60;
   useEffect(
     function () {
-      const id = setInterval(function () {
+      const id = setInterval(() => {
         dispatch({ type: "tick" });
       }, 1000);
 
